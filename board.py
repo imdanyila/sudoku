@@ -113,8 +113,8 @@ class Board:
         original_board = copy.deepcopy(og_board)
         solved_sudoku = sudoku.solve_sudoku(og_board)
 
-        print(f'solved sudoku {solved_sudoku}')
         print(f'original board {original_board}')
+        print(f'solved sudoku {solved_sudoku}')
         print(f'sudoku {self.sudoku}')
 
         if solved_sudoku == self.sudoku:
