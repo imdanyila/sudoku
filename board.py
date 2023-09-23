@@ -133,7 +133,6 @@ class Board:
                 pygame.draw.lines(self.screen, (255, 0, 0), True,
                                   [(80 * row, 80 * col), (80 * (row + 1), 80 * col), (80 * (row + 1), 80 * (col + 1)),
                                    (80 * row, 80 * (col + 1))], 5)
-
             pygame.display.flip()  # Update the display to show the differences
             return False
 

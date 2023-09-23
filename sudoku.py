@@ -137,10 +137,6 @@ def win_screen(screen):
 
 
 def lose_screen(screen):
-    # loads background image
-    #background = pygame.image.load('background.png')
-    #screen.blit(background, (0, 0))
-
     # generates Game Over text
     font = pygame.font.Font('fonts/regular.ttf', 95)
     lose_text = font.render('Game Over :(', 0, (0, 0, 0))
@@ -166,6 +162,29 @@ def lose_screen(screen):
                 if restart_rectangle.collidepoint(event.pos):
                     return draw_game_start(screen)
         pygame.display.update()
+
+
+def try_again_screen(screen, difficulty):
+    sudoku_board = board.Board(720, 720, screen, difficulty)
+
+    # generates try again text
+    font = pygame.font.Font('fonts/light.ttf', 45)
+    tryAgain_text = font.render('Try Again?', 0, "red")
+    tryAgain_surface = pygame.Surface((tryAgain_text.get_size()[0] + 25, tryAgain_text.get_size()[1] + 25))
+    tryAgain_surface.fill((255, 255, 255))
+    tryAgain_surface.blit(tryAgain_text, (10, 10))
+    tryAgain_rectangle = tryAgain_surface.get_rect(center=(360, 1525 // 2))
+    screen.blit(tryAgain_surface, tryAgain_rectangle)
+
+    while True:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                sys.exit()
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if tryAgain_rectangle.collidepoint(event.pos):
+                    sudoku_board.reset_to_original()
+        pygame.display.update()
+
 
 
 def solve_sudoku(board):
@@ -215,6 +234,7 @@ def main():
     running = True
 
     sudoku_board.draw()
+    count = 0
 
     while running is True:
         og_board = sudoku_board.original_board
@@ -297,18 +317,20 @@ def main():
                     pass
 
                 if sudoku_board.is_full() is True:
-
                     win = sudoku_board.check_board(og_board)
                     print(win)
                     if win is True:
-                        # print("Game Won")
                         running = win_screen(screen)
                     else:
-                        # print("Game Not Won")
-                        #difficulty = lose_screen(screen)
-                        #sudoku_board = board.Board(width, height - 80, screen, difficulty)
-                        #sudoku_board.draw()
-                        pass
+                        if count > 4:
+                            difficulty = lose_screen(screen)
+                            sudoku_board = board.Board(width, height - 80, screen, difficulty)
+                            sudoku_board.draw()
+                        else:
+                            try_again_screen(screen, difficulty)
+                            sudoku_board = board.Board(width, height - 80, screen, difficulty)
+                            sudoku_board.draw()
+
 
         # flip() the display to put your work on screen
         pygame.display.update()
