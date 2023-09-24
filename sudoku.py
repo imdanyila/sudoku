@@ -331,15 +331,13 @@ def main():
                         count += 1
                         if count >= max_attempts:
                             running = lose_screen(screen)
-                            print(running)
                             if running:
                                 difficulty = draw_game_start(screen)
                                 sudoku_board = board.Board(width, height - 80, screen, difficulty)
                                 sudoku_board.draw()
                             count = 0
-                        elif count == 3:
+                        else:
                             try_again_screen(screen, difficulty)
-                            print(running)
                             if running:
                                 sudoku_board.reset_to_original()
                                 sudoku_board.draw()
