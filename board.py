@@ -118,6 +118,7 @@ class Board:
         print(f'sudoku {self.sudoku}')
         """
 
+
         if solved_sudoku == self.sudoku:
             return True
         else:
