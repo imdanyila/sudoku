@@ -54,8 +54,9 @@ def draw_game_start(screen):
     screen.blit(newGame_surface, newGame_rectangle)
     screen.blit(right_surface, right_rectangle)
 
+    selectedDifficulty = None
     # loop to determine game mode selected
-    while True:
+    while selectedDifficulty is None or False:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 sys.exit()
@@ -100,8 +101,9 @@ def draw_game_start(screen):
                     screen.blit(right_surface, right_rectangle)
 
                 elif newGame_rectangle.collidepoint(event.pos):
-                    return difficulty
+                    selectedDifficulty = difficulty
         pygame.display.update()
+    return selectedDifficulty
 
 
 def win_screen(screen):
@@ -138,41 +140,40 @@ def win_screen(screen):
 
 def lose_screen(screen):
     # generates Game Over text
-    font = pygame.font.Font('fonts/regular.ttf', 95)
-    lose_text = font.render('Game Over :(', 0, (0, 0, 0))
+    font = pygame.font.Font('fonts/regular.ttf', 90)
+    lose_text = font.render('Game Over :(', 0, (0, 68, 5))
     lose_rectangle = lose_text.get_rect(
-        center=(720 // 2, 800 // 2 - 150))
+        center=(360, 360))
     screen.blit(lose_text, lose_rectangle)
 
     # generates restart button
-    font = pygame.font.Font('fonts/thin.ttf', 45)
-    restart_text = font.render("restart", 0, (255, 255, 255))
-    restart_surface = pygame.Surface((restart_text.get_size()[0] + 20, restart_text.get_size()[1] + 20))
-    restart_surface.fill((255, 165, 0))
-    restart_surface.blit(restart_text, (10, 10))
-    restart_rectangle = restart_surface.get_rect(
-        center=(720 // 2, 1000 // 2))
-    screen.blit(restart_surface, restart_rectangle)
+    font = pygame.font.Font('fonts/light.ttf', 45)
+    newGame_text = font.render("new game", 0, (0, 68, 5))
+    newGame_surface = pygame.Surface((newGame_text.get_size()[0] + 50, newGame_text.get_size()[1] + 4))
+    newGame_surface.fill((255, 255, 255))
+    newGame_surface.blit(newGame_text, (25, 2))
+    newGame_rectangle = newGame_surface.get_rect(
+        center=(360, 755))
+    screen.blit(newGame_surface, newGame_rectangle)
 
     while True:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 sys.exit()
             if event.type == pygame.MOUSEBUTTONDOWN:
-                if restart_rectangle.collidepoint(event.pos):
-                    return draw_game_start(screen)
+                if newGame_rectangle.collidepoint(event.pos):
+                    return True
         pygame.display.update()
+    return False
 
 
 def try_again_screen(screen, difficulty):
-    sudoku_board = board.Board(720, 720, screen, difficulty)
-
     # generates try again text
     font = pygame.font.Font('fonts/light.ttf', 45)
     tryAgain_text = font.render('Try Again?', 0, "red")
-    tryAgain_surface = pygame.Surface((tryAgain_text.get_size()[0] + 25, tryAgain_text.get_size()[1] + 25))
+    tryAgain_surface = pygame.Surface((tryAgain_text.get_size()[0] + 25, tryAgain_text.get_size()[1] + 10))
     tryAgain_surface.fill((255, 255, 255))
-    tryAgain_surface.blit(tryAgain_text, (10, 10))
+    tryAgain_surface.blit(tryAgain_text, (10, 5))
     tryAgain_rectangle = tryAgain_surface.get_rect(center=(360, 1525 // 2))
     screen.blit(tryAgain_surface, tryAgain_rectangle)
 
@@ -182,7 +183,7 @@ def try_again_screen(screen, difficulty):
                 sys.exit()
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if tryAgain_rectangle.collidepoint(event.pos):
-                    sudoku_board.reset_to_original()
+                    return difficulty
         pygame.display.update()
 
 
@@ -228,13 +229,18 @@ def main():
     height = 800
     screen = pygame.display.set_mode((width, height))
     difficulty = draw_game_start(screen)
-    sudoku_board = board.Board(width, height-80, screen, difficulty)
+    if difficulty is not None and 0 <= difficulty <= 2:
+        sudoku_board = board.Board(width, height-80, screen, difficulty)
+    else:
+        print(difficulty)
+        sys.exit()
 
     clock = pygame.time.Clock()
     running = True
 
     sudoku_board.draw()
     count = 0
+    max_attempts = 3
 
     while running is True:
         og_board = sudoku_board.original_board
@@ -317,20 +323,26 @@ def main():
                     pass
 
                 if sudoku_board.is_full() is True:
+                    og_board = sudoku_board.original_board
                     win = sudoku_board.check_board(og_board)
-                    print(win)
                     if win is True:
                         running = win_screen(screen)
                     else:
-                        if count > 4:
-                            difficulty = lose_screen(screen)
-                            sudoku_board = board.Board(width, height - 80, screen, difficulty)
-                            sudoku_board.draw()
-                        else:
+                        count += 1
+                        if count >= max_attempts:
+                            running = lose_screen(screen)
+                            print(running)
+                            if running:
+                                difficulty = draw_game_start(screen)
+                                sudoku_board = board.Board(width, height - 80, screen, difficulty)
+                                sudoku_board.draw()
+                            count = 0
+                        elif count == 3:
                             try_again_screen(screen, difficulty)
-                            sudoku_board = board.Board(width, height - 80, screen, difficulty)
-                            sudoku_board.draw()
-
+                            print(running)
+                            if running:
+                                sudoku_board.reset_to_original()
+                                sudoku_board.draw()
 
         # flip() the display to put your work on screen
         pygame.display.update()

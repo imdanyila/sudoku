@@ -112,10 +112,11 @@ class Board:
     def check_board(self, og_board):
         original_board = copy.deepcopy(og_board)
         solved_sudoku = sudoku.solve_sudoku(og_board)
-
+        """
         print(f'solved sudoku {solved_sudoku}')
         print(f'original board {original_board}')
         print(f'sudoku {self.sudoku}')
+        """
 
         if solved_sudoku == self.sudoku:
             return True
@@ -129,7 +130,7 @@ class Board:
                         differences.append((row, col, self.sudoku[row][col]))
 
             for row, col, num in differences:
-                print(row, col)
+                #print(row, col)
                 pygame.draw.lines(self.screen, (255, 0, 0), True,
                                   [(80 * row, 80 * col), (80 * (row + 1), 80 * col), (80 * (row + 1), 80 * (col + 1)),
                                    (80 * row, 80 * (col + 1))], 5)
