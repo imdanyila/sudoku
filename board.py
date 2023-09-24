@@ -13,7 +13,7 @@ class Board:
         self.cells = [[], [], [], [], [], [], [], [], []]
         self.selected_cell = None
         if difficulty == 0:
-            removed = 3
+            removed = 30
         elif difficulty == 1:
             removed = 40
         elif difficulty == 2:
@@ -28,6 +28,7 @@ class Board:
 
     # draws board to screen
     def draw(self):
+        # background
         self.screen.fill((255, 255, 255))
         background = pygame.image.load('sudoku_background.png')
         self.screen.blit(background, (0, 0))
@@ -35,7 +36,7 @@ class Board:
             for col in range(0, 9):
                 self.cells[row][col].draw()
 
-    # method to select a specific cell
+    # method to select a specific cell and draws lines to show selected cell
     def select(self, row, col):
         self.draw()
         pygame.draw.lines(self.screen, (50, 82, 123), True,
@@ -44,7 +45,7 @@ class Board:
         # pygame.draw.circle(self.screen, (50, 82, 123), ((col * 80) + 40, (row * 80) + 40), 40, 5)
         self.selected_cell = self.cells[col][row]
 
-    # method to calculate the row and col the current cursor clicked on
+    # function to calculate the row and col the user clicked on
     def click(self, x, y):
         if x <= self.width and y <= self.height:
             row = y // 80
@@ -103,6 +104,7 @@ class Board:
                 if self.cells[row][col].value == 0:
                     return row, col
 
+    # clears the red highlights
     def clear_red_highlights(self):
         for row in range(0, 9):
             for col in range(0, 9):
@@ -110,32 +112,29 @@ class Board:
 
     # checks if board is correct
     def check_board(self, og_board):
+        # keeps a copy of original generated board
         original_board = copy.deepcopy(og_board)
+        # solves the generated board
         solved_sudoku = sudoku.solve_sudoku(og_board)
-        """
-        print(f'solved sudoku {solved_sudoku}')
-        print(f'original board {original_board}')
-        print(f'sudoku {self.sudoku}')
-        """
-
 
         if solved_sudoku == self.sudoku:
             return True
         else:
-            self.draw()  # Redraw the entire board to clear previous red highlights
-
+            # redraw the entire board to clear previous red highlights
+            self.draw()
+            # creates list (row, col, value) with incorrectly inputted cells
             differences = []
             for row in range(0, 9):
                 for col in range(0, 9):
                     if self.sudoku[row][col] != solved_sudoku[row][col]:
                         differences.append((row, col, self.sudoku[row][col]))
-
+            # draws lines around incorrectly inputted cells
             for row, col, num in differences:
-                #print(row, col)
                 pygame.draw.lines(self.screen, (255, 0, 0), True,
                                   [(80 * row, 80 * col), (80 * (row + 1), 80 * col), (80 * (row + 1), 80 * (col + 1)),
                                    (80 * row, 80 * (col + 1))], 5)
-            pygame.display.flip()  # Update the display to show the differences
+            # updates the display to show the differences
+            pygame.display.flip()
             return False
 
 

@@ -15,11 +15,11 @@ def draw_game_start(screen):
     background = pygame.image.load('background.png')
     screen.blit(background, (0, 0))
 
-    # initializes and draws the texts
     list = ['easy', 'medium', 'hard']
     list_position = 0
     difficulty = 0
 
+    # initializes and draws the text
     difficulty_surface = font.render(list[list_position], 0, (105, 105, 105))
     difficulty_rectangle = difficulty_surface.get_rect(
         center=(720 // 2, 400))
@@ -60,7 +60,7 @@ def draw_game_start(screen):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 sys.exit()
-
+            # loop for left arrow button
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if left_rectangle.collidepoint(event.pos):
                     if list_position == -3:
@@ -69,10 +69,12 @@ def draw_game_start(screen):
                     else:
                         list_position -= 1
                         difficulty -= 1
+                    # updates background after every click
                     screen.fill(color)
                     background = pygame.image.load('background.png')
                     screen.blit(background, (0, 0))
 
+                    # redraws the buttons on screen after every click
                     difficulty_surface = font.render(list[list_position], 0, (105, 105, 105))
                     difficulty_rectangle = difficulty_surface.get_rect(
                         center=(720 // 2, 400))
@@ -80,7 +82,7 @@ def draw_game_start(screen):
                     screen.blit(left_surface, left_rectangle)
                     screen.blit(newGame_surface, newGame_rectangle)
                     screen.blit(right_surface, right_rectangle)
-
+                # loop for right arrow button
                 elif right_rectangle.collidepoint(event.pos):
                     if list_position == 2:
                         list_position = 0
@@ -88,10 +90,12 @@ def draw_game_start(screen):
                     else:
                         list_position += 1
                         difficulty += 1
+                    # updates background after every click
                     screen.fill(color)
                     background = pygame.image.load('background.png')
                     screen.blit(background, (0, 0))
 
+                    # redraws the buttons on screen after every click
                     difficulty_surface = font.render(list[list_position], 0, (105, 105, 105))
                     difficulty_rectangle = difficulty_surface.get_rect(
                         center=(720 // 2, 400))
@@ -99,7 +103,7 @@ def draw_game_start(screen):
                     screen.blit(left_surface, left_rectangle)
                     screen.blit(newGame_surface, newGame_rectangle)
                     screen.blit(right_surface, right_rectangle)
-
+                # if user clicks new game it returns the difficulty selected
                 elif newGame_rectangle.collidepoint(event.pos):
                     selectedDifficulty = difficulty
         pygame.display.update()
