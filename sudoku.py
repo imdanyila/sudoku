@@ -172,6 +172,8 @@ def lose_screen(screen):
 
 
 def try_again_screen(screen, difficulty):
+    heartPics = ['2.png', '1.png', '0.png']
+    x = 0
     # generates try again text
     font = pygame.font.Font('fonts/light.ttf', 45)
     tryAgain_text = font.render('Try Again?', 0, "red")
@@ -180,6 +182,10 @@ def try_again_screen(screen, difficulty):
     tryAgain_surface.blit(tryAgain_text, (10, 5))
     tryAgain_rectangle = tryAgain_surface.get_rect(center=(360, 1525 // 2))
     screen.blit(tryAgain_surface, tryAgain_rectangle)
+
+    hearts = pygame.image.load(heartPics[x])
+    screen.blit(hearts, (0, 0))
+    x += 1
 
     while True:
         for event in pygame.event.get():
@@ -247,6 +253,8 @@ def main():
     running = True
     sudoku_board.draw()
 
+    hearts = pygame.image.load('3.png')
+
     while running is True:
         og_board = sudoku_board.original_board
         # initializes button fonts and size
@@ -274,6 +282,9 @@ def main():
         screen.blit(back_surface, back_rectangle)
         screen.blit(restart_surface, restart_rectangle)
         screen.blit(exit_surface, exit_rectangle)
+
+
+        screen.blit(hearts, (0, 0))
 
         # loop for events
         # pygame.QUIT event means the user clicked X to close window

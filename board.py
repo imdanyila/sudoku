@@ -13,7 +13,7 @@ class Board:
         self.cells = [[], [], [], [], [], [], [], [], []]
         self.selected_cell = None
         if difficulty == 0:
-            removed = 30
+            removed = 3
         elif difficulty == 1:
             removed = 40
         elif difficulty == 2:
