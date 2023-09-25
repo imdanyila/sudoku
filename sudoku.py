@@ -12,7 +12,7 @@ def draw_game_start(screen):
     # background image
     color = (255, 255, 255)
     screen.fill(color)
-    background = pygame.image.load('background.png')
+    background = pygame.image.load('images/background.png')
     screen.blit(background, (0, 0))
 
     list = ['easy', 'medium', 'hard']
@@ -71,7 +71,7 @@ def draw_game_start(screen):
                         difficulty -= 1
                     # updates background after every click
                     screen.fill(color)
-                    background = pygame.image.load('background.png')
+                    background = pygame.image.load('images/background.png')
                     screen.blit(background, (0, 0))
 
                     # redraws the buttons on screen after every click
@@ -92,7 +92,7 @@ def draw_game_start(screen):
                         difficulty += 1
                     # updates background after every click
                     screen.fill(color)
-                    background = pygame.image.load('background.png')
+                    background = pygame.image.load('images/background.png')
                     screen.blit(background, (0, 0))
 
                     # redraws the buttons on screen after every click
@@ -112,7 +112,7 @@ def draw_game_start(screen):
 
 def win_screen(screen):
     # loads background image
-    background = pygame.image.load('background.png')
+    background = pygame.image.load('images/background.png')
     screen.blit(background, (0, 0))
 
     # creates font size
@@ -172,7 +172,7 @@ def lose_screen(screen):
 
 
 def try_again_screen(screen, difficulty):
-    heartPics = ['2.png', '1.png', '0.png']
+    heartPics = ['images/2.png', 'images/1.png', 'images/0.png']
     x = 0
     # generates try again text
     font = pygame.font.Font('fonts/light.ttf', 45)
@@ -253,7 +253,7 @@ def main():
     running = True
     sudoku_board.draw()
 
-    hearts = pygame.image.load('3.png')
+    hearts = pygame.image.load('images/3.png')
 
     while running is True:
         og_board = sudoku_board.original_board

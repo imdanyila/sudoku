@@ -30,7 +30,7 @@ class Board:
     def draw(self):
         # background
         self.screen.fill((255, 255, 255))
-        background = pygame.image.load('sudoku_background.png')
+        background = pygame.image.load('images/sudoku_background.png')
         self.screen.blit(background, (0, 0))
         for row in range(0, 9):
             for col in range(0, 9):

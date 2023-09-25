@@ -23,18 +23,6 @@ class Cell:
     # method to set the sketch value
     def set_sketched_value(self, value):
         self.sketch_value = value
-    """
-    # method to draw cell
-    def draw(self):
-        if self.value != 0:
-            font = pygame.font.Font('fonts/gilgan.ttf', 25)
-            text = font.render(str(self.value), True, (105, 105, 105))
-            self.screen.blit(text, ((self.row * 80) + 32, (self.col * 80) + 30))
-        elif 9 >= self.sketch_value >= 1:
-            font = pygame.font.Font('fonts/gilgan.ttf', 25)
-            text = font.render(str(self.sketch_value), True, (105, 105, 105))
-            self.screen.blit(text, ((self.row * 80) + 10, (self.col * 80) + 10))
-    """
 
     def draw(self):
         if self.value != 0:
