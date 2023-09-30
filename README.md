@@ -8,7 +8,7 @@ This is a Python program that allows you to play Sudoku and includes a solver to
 2. The game will start, and you'll see a menu to select the difficulty level (easy, medium, or hard).
 3. Once you select the difficulty, the Sudoku puzzle will be displayed on the screen.
 4. You can navigate through the puzzle using the arrow keys or the mouse.
-5. To input a number, click on a cell and type the number on your keyboard.
+5. To input a number, select the cell and type the number on your keyboard.
 6. To delete a number, select the cell and press the backspace key.
 7. The board will automatically check if it was correctly solved once board is full.
 8. If you complete the puzzle correctly, you'll see a win screen. You can start a new game from there.
