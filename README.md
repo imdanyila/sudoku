@@ -22,6 +22,7 @@ This is a Python program that allows you to play Sudoku and includes a solver to
 - `sudoku.py`: The main program that integrates the puzzle generator, the board, and the game loop using the Pygame library.
 - `sudokuGenerator.py`: This module generates valid Sudoku puzzles of varying difficulty levels.
 - `board.py`: Contains the `Board` class responsible for managing the Sudoku board during gameplay.
+- `cell.py`: Defines the `Cell` class, which represents individual cells in the Sudoku board. It handles the display and interaction for each cell.
 
 ## Dependencies
 
