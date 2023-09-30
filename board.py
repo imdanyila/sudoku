@@ -6,6 +6,7 @@ import copy
 
 
 class Board:
+    # initializes board
     def __init__(self, width, height, screen, difficulty):
         self.width = width
         self.height = height
@@ -13,7 +14,7 @@ class Board:
         self.cells = [[], [], [], [], [], [], [], [], []]
         self.selected_cell = None
         if difficulty == 0:
-            removed = 3
+            removed = 30
         elif difficulty == 1:
             removed = 40
         elif difficulty == 2:
@@ -26,15 +27,38 @@ class Board:
             for col in range(0, 9):
                 self.cells[row].append(cell.Cell(self.sudoku[row][col], row, col, self.screen))
 
+        self.lives = 3  # Initialize with the maximum number of lives
+        self.heart_images = [
+            pygame.image.load('images/0.png'),
+            pygame.image.load('images/1.png'),
+            pygame.image.load('images/2.png'),
+            pygame.image.load('images/3.png')
+        ]
+
     # draws board to screen
     def draw(self):
         # background
         self.screen.fill((255, 255, 255))
         background = pygame.image.load('images/sudoku_background.png')
         self.screen.blit(background, (0, 0))
+
+        hearts = self.heart_images[self.lives]
+        self.screen.blit(hearts, (0, 0))
+
         for row in range(0, 9):
             for col in range(0, 9):
                 self.cells[row][col].draw()
+
+    def decrement_lives(self):
+        self.lives -= 1
+        if self.lives < 0:
+            self.lives = 0
+
+    def set_board(self, new_board):
+        self.sudoku = new_board
+        for row in range(0, 9):
+            for col in range(0, 9):
+                self.cells[row][col].set_cell_value(new_board[row][col])
 
     # method to select a specific cell and draws lines to show selected cell
     def select(self, row, col):
@@ -120,6 +144,7 @@ class Board:
         if solved_sudoku == self.sudoku:
             return True
         else:
+            self.decrement_lives()
             # redraw the entire board to clear previous red highlights
             self.draw()
             # creates list (row, col, value) with incorrectly inputted cells

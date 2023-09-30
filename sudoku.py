@@ -1,7 +1,7 @@
 import sudokuGenerator
 import board
 import pygame
-import math, random
+import copy
 import sys
 
 
@@ -63,7 +63,7 @@ def draw_game_start(screen):
             # loop for left arrow button
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if left_rectangle.collidepoint(event.pos):
-                    if list_position == -3:
+                    if list_position == -2:
                         list_position = 0
                         difficulty = 0
                     else:
@@ -105,40 +105,41 @@ def draw_game_start(screen):
                     screen.blit(right_surface, right_rectangle)
                 # if user clicks new game it returns the difficulty selected
                 elif newGame_rectangle.collidepoint(event.pos):
-                    selectedDifficulty = difficulty
+                    if difficulty == -1:
+                        selectedDifficulty = 2
+                    elif difficulty == -2:
+                        selectedDifficulty = 1
+                    else:
+                        selectedDifficulty = difficulty
         pygame.display.update()
     return selectedDifficulty
 
 
 def win_screen(screen):
-    # loads background image
-    background = pygame.image.load('images/background.png')
-    screen.blit(background, (0, 0))
-
-    # creates font size
-    game_font = pygame.font.Font('fonts/regular.ttf', 95)
+    game_font = pygame.font.Font('fonts/regular.ttf', 90)
     # creates text
-    win_text = game_font.render('Game Won!', 0, (0, 0, 0))
+    win_text = game_font.render('Game Won!', 0, (0, 68, 5))
     win_rectangle = win_text.get_rect(
-        center=(720 // 2, 800 // 2 - 150))
+        center=(360, 360))
     screen.blit(win_text, win_rectangle)
-    # creates exit button
-    exit_font = pygame.font.Font('fonts/thin.ttf', 45)
-    exit_text = exit_font.render('exit', 0, (255, 255, 255))
-    exit_surface = pygame.Surface((exit_text.get_size()[0] + 20, exit_text.get_size()[1] + 20))
-    exit_surface.fill((255, 165, 0))
-    exit_surface.blit(exit_text, (10, 10))
-    exit_rectangle = exit_surface.get_rect(
-        center=(720 // 2, 1000 // 2))
-    screen.blit(exit_surface, exit_rectangle)
+
+    # creates new game button
+    font = pygame.font.Font('fonts/light.ttf', 45)
+    newGame_text = font.render("new game", 0, (0, 68, 5))
+    newGame_surface = pygame.Surface((newGame_text.get_size()[0] + 50, newGame_text.get_size()[1] + 4))
+    newGame_surface.fill((255, 255, 255))
+    newGame_surface.blit(newGame_text, (25, 2))
+    newGame_rectangle = newGame_surface.get_rect(
+        center=(360, 755))
+    screen.blit(newGame_surface, newGame_rectangle)
 
     while True:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 sys.exit()
             if event.type == pygame.MOUSEBUTTONDOWN:
-                if exit_rectangle.collidepoint(event.pos):
-                    return False
+                if newGame_rectangle.collidepoint(event.pos):
+                    return True
         pygame.display.update()
 
 
@@ -172,8 +173,6 @@ def lose_screen(screen):
 
 
 def try_again_screen(screen, difficulty):
-    heartPics = ['images/2.png', 'images/1.png', 'images/0.png']
-    x = 0
     # generates try again text
     font = pygame.font.Font('fonts/light.ttf', 45)
     tryAgain_text = font.render('Try Again?', 0, "red")
@@ -183,10 +182,6 @@ def try_again_screen(screen, difficulty):
     tryAgain_rectangle = tryAgain_surface.get_rect(center=(360, 1525 // 2))
     screen.blit(tryAgain_surface, tryAgain_rectangle)
 
-    hearts = pygame.image.load(heartPics[x])
-    screen.blit(hearts, (0, 0))
-    x += 1
-
     while True:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -195,7 +190,6 @@ def try_again_screen(screen, difficulty):
                 if tryAgain_rectangle.collidepoint(event.pos):
                     return difficulty
         pygame.display.update()
-
 
 
 def solve_sudoku(board):
@@ -226,8 +220,9 @@ def solve_sudoku(board):
                     return False
         return True
 
+    solved_board = [row[:] for row in board]
     if solve():
-        return board
+        return solved_board
     else:
         return None
 
@@ -239,6 +234,7 @@ def main():
     width = 720
     height = 800
     screen = pygame.display.set_mode((width, height))
+
     count = 0
     max_attempts = 3
     # gets difficulty of game
@@ -251,9 +247,8 @@ def main():
 
     clock = pygame.time.Clock()
     running = True
+    show = False
     sudoku_board.draw()
-
-    hearts = pygame.image.load('images/3.png')
 
     while running is True:
         og_board = sudoku_board.original_board
@@ -263,6 +258,7 @@ def main():
         back_text = font.render(" ", 0, (255, 255, 255))
         restart_text = font.render(" ", 0, (255, 255, 255))
         exit_text = font.render(" ", 0, (255, 255, 255))
+        eye_text = font.render(" ", 0, (255, 255, 255))
         # initializes the buttons background color
         back_surface = pygame.Surface((back_text.get_size()[0] + 20, back_text.get_size()[1] + 20), pygame.SRCALPHA)
         back_surface.blit(back_text, (10, 10))
@@ -271,6 +267,8 @@ def main():
         restart_surface.blit(restart_text, (10, 10))
         exit_surface = pygame.Surface((exit_text.get_size()[0] + 20, exit_text.get_size()[1] + 20), pygame.SRCALPHA)
         exit_surface.blit(exit_text, (10, 10))
+        eye_surface = pygame.Surface((eye_text.get_size()[0] + 20, eye_text.get_size()[1] + 20), pygame.SRCALPHA)
+        eye_surface.blit(eye_text, (10, 10))
         # initializes buttons rectangles
         back_rectangle = back_surface.get_rect(
             center=(240, 1525 // 2))
@@ -278,13 +276,15 @@ def main():
             center=(360, 1525 // 2))
         exit_rectangle = exit_surface.get_rect(
             center=(480, 1525 // 2))
+        eye_rectangle = eye_surface.get_rect(
+            center=(600, 1525 // 2))
         # draws the buttons rectangles
         screen.blit(back_surface, back_rectangle)
         screen.blit(restart_surface, restart_rectangle)
         screen.blit(exit_surface, exit_rectangle)
+        screen.blit(eye_surface, eye_rectangle)
 
-
-        screen.blit(hearts, (0, 0))
+        solved_board = solve_sudoku(sudoku_board.original_board)
 
         # loop for events
         # pygame.QUIT event means the user clicked X to close window
@@ -301,9 +301,15 @@ def main():
                 # resets board
                 elif restart_rectangle.collidepoint(event.pos):
                     sudoku_board.reset_to_original()
+                    show = False
                 # exits out of program
                 elif exit_rectangle.collidepoint(event.pos):
                     running = False
+                # shows the solved board
+                elif eye_rectangle.collidepoint(event.pos):
+                    sudoku_board.set_board(solved_board)
+                    sudoku_board.draw()
+                    show = True
 
                 x, y = pygame.mouse.get_pos()
                 row, col = sudoku_board.click(x, y)
@@ -311,6 +317,7 @@ def main():
                     sudoku_board.select(row, col)
                 else:
                     sudoku_board.draw()
+
             # statements to determine keys pressed
             elif event.type == pygame.KEYDOWN:
                 try:
@@ -329,8 +336,8 @@ def main():
                     elif event.key == pygame.K_RETURN:
                         sudoku_board.place_number(sudoku_board.selected_cell.sketch_value)
                     elif event.key == pygame.K_BACKSPACE:
-                        sudoku_board.clear()
                         sudoku_board.select(row, col)
+                        sudoku_board.clear()
                     else:
                         number = int(chr(event.key))
                         if 9 >= number >= 1:
@@ -340,35 +347,45 @@ def main():
                     pass
                 except TypeError:
                     pass
-                # checks if board is full
-                if sudoku_board.is_full() is True:
-                    # checks if solved board matches users board
-                    og_board = sudoku_board.original_board
-                    win = sudoku_board.check_board(og_board)
-                    # win function
-                    if win is True:
-                        running = win_screen(screen)
-                    # try again function
-                    else:
-                        # add 1 to count
-                        count += 1
-                        # if count >= 3 then lose screen
-                        if count >= max_attempts:
-                            running = lose_screen(screen)
-                            # redraws new board
+
+                # if it is not revealing the solved board then it will check if board is full
+                if show == False:
+                    # checks if board is full
+                    if sudoku_board.is_full() is True:
+                        # checks if solved board matches users board
+                        og_board = sudoku_board.original_board
+                        win = sudoku_board.check_board(og_board)
+                        # win function
+                        if win is True:
+                            running = win_screen(screen)
                             if running:
                                 difficulty = draw_game_start(screen)
                                 sudoku_board = board.Board(width, height - 80, screen, difficulty)
                                 sudoku_board.draw()
                             # resets count back to 0
                             count = 0
-                        # if count is not 3 then try again screen
+                        # try again function
                         else:
-                            try_again_screen(screen, difficulty)
-                            # resets board
-                            if running:
-                                sudoku_board.reset_to_original()
-                                sudoku_board.draw()
+                            # add 1 to count
+                            count += 1
+                            # if count >= 3 then lose screen
+                            if count >= max_attempts:
+                                running = lose_screen(screen)
+                                # redraws new board
+                                if running:
+                                    difficulty = draw_game_start(screen)
+                                    sudoku_board = board.Board(width, height - 80, screen, difficulty)
+                                    sudoku_board.draw()
+                                # resets count back to 0
+                                count = 0
+                            # if count is not 3 then try again screen
+                            else:
+                                try_again_screen(screen, difficulty)
+                                # resets board
+                                if running:
+                                    sudoku_board.reset_to_original()
+                                    sudoku_board.draw()
+
 
         # flip() the display to put your work on screen
         pygame.display.update()
